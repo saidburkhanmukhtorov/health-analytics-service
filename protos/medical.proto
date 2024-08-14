@@ -1,0 +1,213 @@
+syntax = "proto3";
+
+option go_package = "genproto/health";
+
+package health;
+
+import "google/protobuf/any.proto";
+
+// ByIdRequest message for Get and Delete methods
+message ByIdRequest {
+  string id = 1;
+}
+
+// Medical Records
+message MedicalRecord {
+  string id = 1;
+  string user_id = 2;
+  string record_type = 3;
+  string record_date = 4;
+  string description = 5;
+  string doctor_id = 6;
+  repeated string attachments = 7;
+  string created_at = 8;
+  string updated_at = 9;
+}
+
+// Genetic Data
+message GeneticData {
+  string id = 1;
+  string user_id = 2;
+  string data_type = 3;
+  google.protobuf.Any data_value = 4;
+  string analysis_date = 5;
+  string created_at = 6;
+  string updated_at = 7;
+}
+
+// Lifestyle Data
+message LifestyleData {
+  string id = 1;
+  string user_id = 2;
+  string data_type = 3;
+  google.protobuf.Any data_value = 4;
+  string recorded_date = 5;
+  string created_at = 6;
+  string updated_at = 7;
+}
+
+// Wearable Data
+message WearableData {
+  string id = 1;
+  string user_id = 2;
+  string device_type = 3;
+  string data_type = 4;
+  google.protobuf.Any data_value = 5;
+  string recorded_timestamp = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+// Health Recommendations
+message HealthRecommendation {
+  string id = 1;
+  string user_id = 2;
+  string recommendation_type = 3;
+  string description = 4;
+  int32 priority = 5;
+  string created_at = 6;
+  string updated_at = 7;
+}
+
+// Sleep Data
+message SleepData {
+  string user_id = 1;
+  int64 sleep_duration = 2; // Sleep duration in milliseconds
+  string sleep_quality = 3;  // Subjective sleep quality (e.g., "Good", "Average", "Poor")
+  string recorded_date = 4; // Date when the sleep data was recorded (YYYY-MM-DD)
+}
+
+// Heart Rate Data
+message HeartRateData {
+  string user_id = 1;
+  int32 heart_rate = 2; // Heart rate in beats per minute (BPM)
+  string recorded_timestamp = 3; // Timestamp when the heart rate was recorded (RFC3339 format)
+}
+
+// Empty Message
+message Empty {}
+
+// Request messages for List methods with filters
+message ListMedicalRecordsRequest {
+  string user_id = 1;
+  string record_type = 2;
+  string record_date = 3;
+  string description = 4;
+  string doctor_id = 5;
+}
+
+message ListGeneticDataRequest {
+  string user_id = 1;
+  string data_type = 2;
+  string analysis_date = 3;
+}
+
+message ListLifestyleDataRequest {
+  string user_id = 1;
+  string data_type = 2;
+  string recorded_date = 3;
+}
+
+message ListWearableDataRequest {
+  string user_id = 1;
+  string device_type = 2;
+  string data_type = 3;
+  string recorded_timestamp = 4;
+}
+
+message ListHealthRecommendationsRequest {
+  string user_id = 1;
+  string recommendation_type = 2;
+  int32 priority = 3;
+}
+
+// Response messages for List methods
+message ListMedicalRecordsResponse {
+  repeated MedicalRecord medical_records = 1;
+}
+
+message ListGeneticDataResponse {
+  repeated GeneticData genetic_data = 1;
+}
+
+message ListLifestyleDataResponse {
+  repeated LifestyleData lifestyle_data = 1;
+}
+
+message ListWearableDataResponse {
+  repeated WearableData wearable_data = 1;
+}
+
+message ListHealthRecommendationsResponse {
+  repeated HealthRecommendation health_recommendations = 1;
+}
+
+
+// DailySummaryRequest message
+message DailySummaryRequest {
+  string user_id = 1;
+  string date = 2; // Date in YYYY-MM-DD format
+}
+
+// WeeklySummaryRequest message
+message WeeklySummaryRequest {
+  string user_id = 1;
+  string start_date = 2; // Start date in YYYY-MM-DD format
+  string end_date = 3; // End date in YYYY-MM-DD format
+}
+
+// SummaryResponse message
+message SummaryResponse {
+  repeated MedicalRecord medical_records = 1;
+  repeated GeneticData genetic_data = 2;
+  repeated LifestyleData lifestyle_data = 3;
+  repeated WearableData wearable_data = 4;
+  repeated HealthRecommendation health_recommendations = 5;
+}
+
+// HealthMonitoringService
+service HealthMonitoringService {
+  rpc GetDailySummary (DailySummaryRequest) returns (SummaryResponse);
+  rpc GetWeeklySummary (WeeklySummaryRequest) returns (SummaryResponse);
+}
+
+// Services
+service MedicalRecordService {
+  rpc CreateMedicalRecord (MedicalRecord) returns (Empty);
+  rpc GetMedicalRecord (ByIdRequest) returns (MedicalRecord);
+  rpc UpdateMedicalRecord (MedicalRecord) returns (Empty);
+  rpc DeleteMedicalRecord (ByIdRequest) returns (Empty);
+  rpc ListMedicalRecords (ListMedicalRecordsRequest) returns (ListMedicalRecordsResponse);
+}
+
+service GeneticDataService {
+  rpc CreateGeneticData (GeneticData) returns (Empty);
+  rpc GetGeneticData (ByIdRequest) returns (GeneticData);
+  rpc UpdateGeneticData (GeneticData) returns (Empty);
+  rpc DeleteGeneticData (ByIdRequest) returns (Empty);
+  rpc ListGeneticData (ListGeneticDataRequest) returns (ListGeneticDataResponse);
+}
+
+service LifestyleDataService {
+  rpc CreateLifestyleData (LifestyleData) returns (Empty);
+  rpc GetLifestyleData (ByIdRequest) returns (LifestyleData);
+  rpc UpdateLifestyleData (LifestyleData) returns (Empty);
+  rpc DeleteLifestyleData (ByIdRequest) returns (Empty);
+  rpc ListLifestyleData (ListLifestyleDataRequest) returns (ListLifestyleDataResponse);
+}
+
+service WearableDataService {
+  rpc CreateWearableData (WearableData) returns (Empty);
+  rpc GetWearableData (ByIdRequest) returns (WearableData);
+  rpc UpdateWearableData (WearableData) returns (Empty);
+  rpc DeleteWearableData (ByIdRequest) returns (Empty);
+  rpc ListWearableData (ListWearableDataRequest) returns (ListWearableDataResponse);
+}
+
+service HealthRecommendationService {
+  rpc CreateHealthRecommendation (HealthRecommendation) returns (Empty);
+  rpc GetHealthRecommendation (ByIdRequest) returns (HealthRecommendation);
+  rpc UpdateHealthRecommendation (HealthRecommendation) returns (Empty);
+  rpc DeleteHealthRecommendation (ByIdRequest) returns (Empty);
+  rpc ListHealthRecommendations (ListHealthRecommendationsRequest) returns (ListHealthRecommendationsResponse);
+}
