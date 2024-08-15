@@ -8,6 +8,7 @@ import (
 
 	"github.com/health-analytics-service/health-analytics-service/genproto/health"
 	"github.com/health-analytics-service/health-analytics-service/storage"
+	"github.com/health-analytics-service/health-analytics-service/storage/redis"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -15,16 +16,17 @@ import (
 type MedicalRecordConsumer struct {
 	reader  *kafka.Reader
 	storage storage.StorageI
+	redis   *redis.Client // Add Redis client
 }
 
 // NewMedicalRecordConsumer creates a new MedicalRecordConsumer instance.
-func NewMedicalRecordConsumer(kafkaBrokers []string, topic string, storage storage.StorageI) *MedicalRecordConsumer {
+func NewMedicalRecordConsumer(kafkaBrokers []string, topic string, storage storage.StorageI, redis *redis.Client) *MedicalRecordConsumer { // Add Redis client to constructor
 	reader := kafka.NewReader(kafka.ReaderConfig{
 		Brokers: kafkaBrokers,
 		Topic:   topic,
 		GroupID: "medical-record-group", // Choose a suitable group ID
 	})
-	return &MedicalRecordConsumer{reader: reader, storage: storage}
+	return &MedicalRecordConsumer{reader: reader, storage: storage, redis: redis}
 }
 
 // Consume starts consuming messages from the Kafka topic.
@@ -47,6 +49,12 @@ func (c *MedicalRecordConsumer) Consume(ctx context.Context) error {
 				log.Printf("error creating medical record: %v", err)
 			}
 
+			// Send notification for creation
+			if err := c.redis.AddNotification(ctx, createModel.UserId, "Your medical record has been created."); err != nil {
+				log.Printf("failed to send notification: %v", err)
+				// Handle error (e.g., log and continue, retry, etc.)
+			}
+
 		case "medical_record.update":
 			var updateModel health.MedicalRecord
 			if err := json.Unmarshal(msg.Value, &updateModel); err != nil {
@@ -55,6 +63,12 @@ func (c *MedicalRecordConsumer) Consume(ctx context.Context) error {
 			}
 			if err := c.storage.MedicalRecord().UpdateMedicalRecord(ctx, &updateModel); err != nil {
 				log.Printf("error updating medical record: %v", err)
+			}
+
+			// Send notification for update
+			if err := c.redis.AddNotification(ctx, updateModel.UserId, "Your medical record has been updated."); err != nil {
+				log.Printf("failed to send notification: %v", err)
+				// Handle error
 			}
 
 		default:

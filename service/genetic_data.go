@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-redis/redis"
 	"github.com/health-analytics-service/health-analytics-service/genproto/health"
 	"github.com/health-analytics-service/health-analytics-service/storage"
+	"github.com/health-analytics-service/health-analytics-service/storage/redis"
 )
 
 // GeneticDataService implements the health.GeneticDataServiceServer interface.
@@ -23,17 +23,17 @@ func NewGeneticDataService(storage storage.StorageI) *GeneticDataService {
 	}
 }
 
-// // CreateGeneticData creates a new genetic data record.
-// func (s *GeneticDataService) CreateGeneticData(ctx context.Context, req *health.GeneticData) (*health.Empty, error) {
-// 	createdID, err := s.storage.GeneticData().CreateGeneticData(ctx, req)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to create genetic data: %w", err)
-// 	}
+// CreateGeneticData creates a new genetic data record.
+func (s *GeneticDataService) CreateGeneticData(ctx context.Context, req *health.GeneticData) (*health.Empty, error) {
+	createdID, err := s.storage.GeneticData().CreateGeneticData(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create genetic data: %w", err)
+	}
 
-// 	fmt.Println("Created Genetic Data with ID:", createdID) // Optional: Print the created ID
+	fmt.Println("Created Genetic Data with ID:", createdID) // Optional: Print the created ID
 
-// 	return &health.Empty{}, nil
-// }
+	return &health.Empty{}, nil
+}
 
 // GetGeneticData retrieves a genetic data record by its ID.
 func (s *GeneticDataService) GetGeneticData(ctx context.Context, req *health.ByIdRequest) (*health.GeneticData, error) {
@@ -45,15 +45,15 @@ func (s *GeneticDataService) GetGeneticData(ctx context.Context, req *health.ByI
 	return data, nil
 }
 
-// // UpdateGeneticData updates an existing genetic data record.
-// func (s *GeneticDataService) UpdateGeneticData(ctx context.Context, req *health.GeneticData) (*health.Empty, error) {
-// 	err := s.storage.GeneticData().UpdateGeneticData(ctx, req)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to update genetic data: %w", err)
-// 	}
+// UpdateGeneticData updates an existing genetic data record.
+func (s *GeneticDataService) UpdateGeneticData(ctx context.Context, req *health.GeneticData) (*health.Empty, error) {
+	err := s.storage.GeneticData().UpdateGeneticData(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update genetic data: %w", err)
+	}
 
-// 	return &health.Empty{}, nil
-// }
+	return &health.Empty{}, nil
+}
 
 // DeleteGeneticData deletes a genetic data record by its ID.
 func (s *GeneticDataService) DeleteGeneticData(ctx context.Context, req *health.ByIdRequest) (*health.Empty, error) {

@@ -23,17 +23,17 @@ func NewLifestyleDataService(storage storage.StorageI) *LifestyleDataService {
 	}
 }
 
-// // CreateLifestyleData creates a new lifestyle data record.
-// func (s *LifestyleDataService) CreateLifestyleData(ctx context.Context, req *health.LifestyleData) (*health.Empty, error) {
-// 	createdID, err := s.storage.LifestyleData().CreateLifestyleData(ctx, req)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to create lifestyle data: %w", err)
-// 	}
+// CreateLifestyleData creates a new lifestyle data record.
+func (s *LifestyleDataService) CreateLifestyleData(ctx context.Context, req *health.LifestyleData) (*health.Empty, error) {
+	createdID, err := s.storage.LifestyleData().CreateLifestyleData(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create lifestyle data: %w", err)
+	}
 
-// 	fmt.Println("Created Lifestyle Data with ID:", createdID) // Optional: Print the created ID
+	fmt.Println("Created Lifestyle Data with ID:", createdID) // Optional: Print the created ID
 
-// 	return &health.Empty{}, nil
-// }
+	return &health.Empty{}, nil
+}
 
 // GetLifestyleData retrieves a lifestyle data record by its ID.
 func (s *LifestyleDataService) GetLifestyleData(ctx context.Context, req *health.ByIdRequest) (*health.LifestyleData, error) {
@@ -45,15 +45,15 @@ func (s *LifestyleDataService) GetLifestyleData(ctx context.Context, req *health
 	return data, nil
 }
 
-// // UpdateLifestyleData updates an existing lifestyle data record.
-// func (s *LifestyleDataService) UpdateLifestyleData(ctx context.Context, req *health.LifestyleData) (*health.Empty, error) {
-// 	err := s.storage.LifestyleData().UpdateLifestyleData(ctx, req)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to update lifestyle data: %w", err)
-// 	}
+// UpdateLifestyleData updates an existing lifestyle data record.
+func (s *LifestyleDataService) UpdateLifestyleData(ctx context.Context, req *health.LifestyleData) (*health.Empty, error) {
+	err := s.storage.LifestyleData().UpdateLifestyleData(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update lifestyle data: %w", err)
+	}
 
-// 	return &health.Empty{}, nil
-// }
+	return &health.Empty{}, nil
+}
 
 // DeleteLifestyleData deletes a lifestyle data record by its ID.
 func (s *LifestyleDataService) DeleteLifestyleData(ctx context.Context, req *health.ByIdRequest) (*health.Empty, error) {

@@ -23,17 +23,17 @@ func NewHealthRecommendationService(storage storage.StorageI) *HealthRecommendat
 	}
 }
 
-// // CreateHealthRecommendation creates a new health recommendation.
-// func (s *HealthRecommendationService) CreateHealthRecommendation(ctx context.Context, req *health.HealthRecommendation) (*health.Empty, error) {
-// 	createdID, err := s.storage.HealthRecommendation().CreateHealthRecommendation(ctx, req)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to create health recommendation: %w", err)
-// 	}
+// CreateHealthRecommendation creates a new health recommendation.
+func (s *HealthRecommendationService) CreateHealthRecommendation(ctx context.Context, req *health.HealthRecommendation) (*health.Empty, error) {
+	createdID, err := s.storage.HealthRecommendation().CreateHealthRecommendation(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create health recommendation: %w", err)
+	}
 
-// 	fmt.Println("Created Health Recommendation with ID:", createdID) // Optional: Print the created ID
+	fmt.Println("Created Health Recommendation with ID:", createdID) // Optional: Print the created ID
 
-// 	return &health.Empty{}, nil
-// }
+	return &health.Empty{}, nil
+}
 
 // GetHealthRecommendation retrieves a health recommendation by its ID.
 func (s *HealthRecommendationService) GetHealthRecommendation(ctx context.Context, req *health.ByIdRequest) (*health.HealthRecommendation, error) {
@@ -45,15 +45,15 @@ func (s *HealthRecommendationService) GetHealthRecommendation(ctx context.Contex
 	return recommendation, nil
 }
 
-// // UpdateHealthRecommendation updates an existing health recommendation.
-// func (s *HealthRecommendationService) UpdateHealthRecommendation(ctx context.Context, req *health.HealthRecommendation) (*health.Empty, error) {
-// 	err := s.storage.HealthRecommendation().UpdateHealthRecommendation(ctx, req)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to update health recommendation: %w", err)
-// 	}
+// UpdateHealthRecommendation updates an existing health recommendation.
+func (s *HealthRecommendationService) UpdateHealthRecommendation(ctx context.Context, req *health.HealthRecommendation) (*health.Empty, error) {
+	err := s.storage.HealthRecommendation().UpdateHealthRecommendation(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update health recommendation: %w", err)
+	}
 
-// 	return &health.Empty{}, nil
-// }
+	return &health.Empty{}, nil
+}
 
 // DeleteHealthRecommendation deletes a health recommendation by its ID.
 func (s *HealthRecommendationService) DeleteHealthRecommendation(ctx context.Context, req *health.ByIdRequest) (*health.Empty, error) {

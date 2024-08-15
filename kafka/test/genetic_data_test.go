@@ -6,15 +6,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/health-analytics-service/health-analytics-service/config"
 	"github.com/health-analytics-service/health-analytics-service/genproto/health"
 	consumer "github.com/health-analytics-service/health-analytics-service/kafka"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-
+	redisDB "github.com/health-analytics-service/health-analytics-service/storage/redis"
 	"github.com/health-analytics-service/health-analytics-service/storage/test"
 	"github.com/segmentio/kafka-go"
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
@@ -31,10 +30,12 @@ func TestGeneticDataConsumer(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to initialize storage: %v", err)
 	}
+	redisCl, err := redisDB.Connect(&cfg)
+	assert.NoError(t, err, "Failed to connect redis")
 
 	// Create a test genetic data model
 	dataValue, err := anypb.New(&health.MedicalRecord{
-		UserId:      uuid.NewString(),
+		UserId:      "585b2a62-0943-4a69-99a5-d72c25df523c",
 		RecordType:  "Genetic Test",
 		RecordDate:  time.Now().Format("2006-01-02"),
 		Description: "Sample genetic test data",
@@ -43,13 +44,13 @@ func TestGeneticDataConsumer(t *testing.T) {
 
 	geneticDataModel := &health.GeneticData{
 		Id:           primitive.NewObjectID().Hex(),
-		UserId:       uuid.NewString(),
+		UserId:       "585b2a62-0943-4a69-99a5-d72c25df523c",
 		DataType:     "DNA Sequencing",
 		DataValue:    dataValue,
 		AnalysisDate: time.Now().Format("2006-01-02"),
 	}
 	// Create a GeneticDataConsumer with the test storage
-	consumer := consumer.NewGeneticDataConsumer(cfg.KafkaBrokersTest, topic, storage)
+	consumer := consumer.NewGeneticDataConsumer(cfg.KafkaBrokersTest, topic, storage, redisCl)
 	// Consume the message
 	go func() {
 		if err := consumer.Consume(context.Background()); err != nil {

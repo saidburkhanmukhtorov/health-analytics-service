@@ -8,6 +8,7 @@ import (
 
 	"github.com/health-analytics-service/health-analytics-service/genproto/health"
 	"github.com/health-analytics-service/health-analytics-service/storage"
+	"github.com/health-analytics-service/health-analytics-service/storage/redis"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -15,16 +16,17 @@ import (
 type HealthRecommendationConsumer struct {
 	reader  *kafka.Reader
 	storage storage.StorageI
+	redis   *redis.Client // Add Redis client
 }
 
 // NewHealthRecommendationConsumer creates a new HealthRecommendationConsumer instance.
-func NewHealthRecommendationConsumer(kafkaBrokers []string, topic string, storage storage.StorageI) *HealthRecommendationConsumer {
+func NewHealthRecommendationConsumer(kafkaBrokers []string, topic string, storage storage.StorageI, redis *redis.Client) *HealthRecommendationConsumer { // Add Redis client to constructor
 	reader := kafka.NewReader(kafka.ReaderConfig{
 		Brokers: kafkaBrokers,
 		Topic:   topic,
 		GroupID: "health-recommendation-group", // Choose a suitable group ID
 	})
-	return &HealthRecommendationConsumer{reader: reader, storage: storage}
+	return &HealthRecommendationConsumer{reader: reader, storage: storage, redis: redis}
 }
 
 // Consume starts consuming messages from the Kafka topic.
@@ -47,6 +49,12 @@ func (c *HealthRecommendationConsumer) Consume(ctx context.Context) error {
 				log.Printf("error creating health recommendation: %v", err)
 			}
 
+			// Send notification for creation
+			if err := c.redis.AddNotification(ctx, createModel.UserId, "You have a new health recommendation."); err != nil {
+				log.Printf("failed to send notification: %v", err)
+				// Handle error (e.g., log and continue, retry, etc.)
+			}
+
 		case "health_recommendation.update":
 			var updateModel health.HealthRecommendation
 			if err := json.Unmarshal(msg.Value, &updateModel); err != nil {
@@ -55,6 +63,12 @@ func (c *HealthRecommendationConsumer) Consume(ctx context.Context) error {
 			}
 			if err := c.storage.HealthRecommendation().UpdateHealthRecommendation(ctx, &updateModel); err != nil {
 				log.Printf("error updating health recommendation: %v", err)
+			}
+
+			// Send notification for update
+			if err := c.redis.AddNotification(ctx, updateModel.UserId, "A health recommendation has been updated."); err != nil {
+				log.Printf("failed to send notification: %v", err)
+				// Handle error
 			}
 
 		default:

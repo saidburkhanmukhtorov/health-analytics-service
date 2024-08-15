@@ -56,7 +56,6 @@ func (c *WearableDataConsumer) Consume(ctx context.Context) error {
 			if err := c.storage.WearableData().UpdateWearableData(ctx, &updateModel); err != nil {
 				log.Printf("error updating wearable data: %v", err)
 			}
-
 		default:
 			log.Printf("unknown message key: %s", msg.Key)
 		}

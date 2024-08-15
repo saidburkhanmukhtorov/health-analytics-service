@@ -23,17 +23,17 @@ func NewMedicalRecordService(storage storage.StorageI) *MedicalRecordService {
 	}
 }
 
-// // CreateMedicalRecord creates a new medical record.
-// func (s *MedicalRecordService) CreateMedicalRecord(ctx context.Context, req *health.MedicalRecord) (*health.Empty, error) {
-// 	createdID, err := s.storage.MedicalRecord().CreateMedicalRecord(ctx, req)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to create medical record: %w", err)
-// 	}
+// CreateMedicalRecord creates a new medical record.
+func (s *MedicalRecordService) CreateMedicalRecord(ctx context.Context, req *health.MedicalRecord) (*health.Empty, error) {
+	createdID, err := s.storage.MedicalRecord().CreateMedicalRecord(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create medical record: %w", err)
+	}
 
-// 	fmt.Println("Created Medical Record with ID:", createdID) // Optional: Print the created ID
+	fmt.Println("Created Medical Record with ID:", createdID) // Optional: Print the created ID
 
-// 	return &health.Empty{}, nil
-// }
+	return &health.Empty{}, nil
+}
 
 // GetMedicalRecord retrieves a medical record by its ID.
 func (s *MedicalRecordService) GetMedicalRecord(ctx context.Context, req *health.ByIdRequest) (*health.MedicalRecord, error) {
@@ -45,15 +45,15 @@ func (s *MedicalRecordService) GetMedicalRecord(ctx context.Context, req *health
 	return record, nil
 }
 
-// // UpdateMedicalRecord updates an existing medical record.
-// func (s *MedicalRecordService) UpdateMedicalRecord(ctx context.Context, req *health.MedicalRecord) (*health.Empty, error) {
-// 	err := s.storage.MedicalRecord().UpdateMedicalRecord(ctx, req)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to update medical record: %w", err)
-// 	}
+// UpdateMedicalRecord updates an existing medical record.
+func (s *MedicalRecordService) UpdateMedicalRecord(ctx context.Context, req *health.MedicalRecord) (*health.Empty, error) {
+	err := s.storage.MedicalRecord().UpdateMedicalRecord(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update medical record: %w", err)
+	}
 
-// 	return &health.Empty{}, nil
-// }
+	return &health.Empty{}, nil
+}
 
 // DeleteMedicalRecord deletes a medical record by its ID.
 func (s *MedicalRecordService) DeleteMedicalRecord(ctx context.Context, req *health.ByIdRequest) (*health.Empty, error) {

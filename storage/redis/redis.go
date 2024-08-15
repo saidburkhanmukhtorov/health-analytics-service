@@ -2,10 +2,12 @@ package redis
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/google/uuid"
 	"github.com/health-analytics-service/health-analytics-service/config"
 )
 
@@ -30,26 +32,40 @@ func Connect(cfg *config.Config) (*Client, error) {
 	return &Client{client}, nil
 }
 
-// SaveOTP saves the OTP code in Redis with an expiration time.
-func (c *Client) SaveOTP(ctx context.Context, email string, otp string, expiration time.Duration) error {
-	key := fmt.Sprintf("otp:%s", email)
-	err := c.Set(ctx, key, otp, expiration).Err()
-	if err != nil {
-		return fmt.Errorf("failed to save OTP in Redis: %w", err)
-	}
-	return nil
+// Add these new methods for notification handling
+type Notification struct {
+	ID      string    `json:"id"`
+	UserID  string    `json:"user_id"`
+	Message string    `json:"message"`
+	Created time.Time `json:"created"`
 }
 
-// VerifyOTP verifies the OTP code against the one stored in Redis.
-func (c *Client) VerifyOTP(ctx context.Context, email string, otp string) (bool, error) {
-	key := fmt.Sprintf("otp:%s", email)
-	storedOTP, err := c.Get(ctx, key).Result()
+func (c *Client) AddNotification(ctx context.Context, user_id, message string) error {
+	notification := Notification{
+		ID:      uuid.NewString(),
+		UserID:  user_id,
+		Message: message,
+		Created: time.Now(),
+	}
+	json, err := json.Marshal(notification)
 	if err != nil {
-		if err == redis.Nil {
-			return false, nil // OTP not found (expired or never set)
-		}
-		return false, fmt.Errorf("failed to get OTP from Redis: %w", err)
+		return err
 	}
 
-	return storedOTP == otp, nil
+	pipe := c.Pipeline()
+
+	// Add to unread set
+	pipe.SAdd(ctx, fmt.Sprintf("unread:%s", notification.UserID), notification.ID)
+
+	// Add to sorted set for ordering
+	pipe.ZAdd(ctx, fmt.Sprintf("notifications:%s", notification.UserID), &redis.Z{
+		Score:  float64(notification.Created.Unix()),
+		Member: notification.ID,
+	})
+
+	// Store notification data
+	pipe.Set(ctx, fmt.Sprintf("notification:%s", notification.ID), json, 0)
+
+	_, err = pipe.Exec(ctx)
+	return err
 }

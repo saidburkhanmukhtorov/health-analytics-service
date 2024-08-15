@@ -18,5 +18,5 @@ COPY .env .
 # Make sure the CA certificates are in the trusted store
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 
-EXPOSE 9091
+EXPOSE 8082
 CMD ["./myapp"]

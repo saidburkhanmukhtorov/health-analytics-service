@@ -23,17 +23,17 @@ func NewWearableDataService(storage storage.StorageI) *WearableDataService {
 	}
 }
 
-// // CreateWearableData creates a new wearable data record.
-// func (s *WearableDataService) CreateWearableData(ctx context.Context, req *health.WearableData) (*health.Empty, error) {
-// 	createdID, err := s.storage.WearableData().CreateWearableData(ctx, req)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to create wearable data: %w", err)
-// 	}
+// CreateWearableData creates a new wearable data record.
+func (s *WearableDataService) CreateWearableData(ctx context.Context, req *health.WearableData) (*health.Empty, error) {
+	createdID, err := s.storage.WearableData().CreateWearableData(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create wearable data: %w", err)
+	}
 
-// 	fmt.Println("Created Wearable Data with ID:", createdID) // Optional: Print the created ID
+	fmt.Println("Created Wearable Data with ID:", createdID) // Optional: Print the created ID
 
-// 	return &health.Empty{}, nil
-// }
+	return &health.Empty{}, nil
+}
 
 // GetWearableData retrieves a wearable data record by its ID.
 func (s *WearableDataService) GetWearableData(ctx context.Context, req *health.ByIdRequest) (*health.WearableData, error) {
@@ -45,15 +45,15 @@ func (s *WearableDataService) GetWearableData(ctx context.Context, req *health.B
 	return data, nil
 }
 
-// // UpdateWearableData updates an existing wearable data record.
-// func (s *WearableDataService) UpdateWearableData(ctx context.Context, req *health.WearableData) (*health.Empty, error) {
-// 	err := s.storage.WearableData().UpdateWearableData(ctx, req)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to update wearable data: %w", err)
-// 	}
+// UpdateWearableData updates an existing wearable data record.
+func (s *WearableDataService) UpdateWearableData(ctx context.Context, req *health.WearableData) (*health.Empty, error) {
+	err := s.storage.WearableData().UpdateWearableData(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update wearable data: %w", err)
+	}
 
-// 	return &health.Empty{}, nil
-// }
+	return &health.Empty{}, nil
+}
 
 // DeleteWearableData deletes a wearable data record by its ID.
 func (s *WearableDataService) DeleteWearableData(ctx context.Context, req *health.ByIdRequest) (*health.Empty, error) {

@@ -10,7 +10,7 @@ import (
 
 // Config struct holds the configuration settings.
 type Config struct {
-	HTTPPort string
+	GRPCPort string
 
 	// PostgreSQL Configuration (Development)
 	PostgresHost     string
@@ -40,8 +40,13 @@ type Config struct {
 	RedisDB       int
 
 	// Kafka Configuration
-	KafkaBrokers     []string
-	KafkaBrokersTest []string
+	KafkaBrokers                   []string
+	KafkaBrokersTest               []string
+	KafkaMedicalRecordTopic        string
+	KafkaGeneticDataTopic          string
+	KafkaLifestyleDataTopic        string
+	KafkaWearableDataTopic         string
+	KafkaHealthRecommendationTopic string
 
 	LOG_PATH string
 }
@@ -54,7 +59,7 @@ func Load() Config {
 
 	config := Config{}
 
-	config.HTTPPort = cast.ToString(coalesce("HTTP_PORT", ":9090"))
+	config.GRPCPort = cast.ToString(coalesce("GRPC_Port", ":8082"))
 
 	// PostgreSQL Configuration (Development)
 	config.PostgresHost = cast.ToString(coalesce("POSTGRES_HOST", "postgres_dock"))
@@ -85,7 +90,12 @@ func Load() Config {
 	// Kafka
 	config.KafkaBrokers = cast.ToStringSlice(coalesce("KAFKA_BROKERS", []string{"kafka:9092"}))
 	config.KafkaBrokersTest = cast.ToStringSlice(coalesce("KAFKA_BROKERS_Test", []string{"localhost:9092"}))
-
+	// Kafka Topics
+	config.KafkaMedicalRecordTopic = cast.ToString(coalesce("KAFKA_MEDICAL_RECORD_TOPIC", "medical_record_topic"))
+	config.KafkaGeneticDataTopic = cast.ToString(coalesce("KAFKA_GENETIC_DATA_TOPIC", "genetic_data_topic"))
+	config.KafkaLifestyleDataTopic = cast.ToString(coalesce("KAFKA_LIFESTYLE_DATA_TOPIC", "lifestyle_data_topic"))
+	config.KafkaWearableDataTopic = cast.ToString(coalesce("KAFKA_WEARABLE_DATA_TOPIC", "wearable_data_topic"))
+	config.KafkaHealthRecommendationTopic = cast.ToString(coalesce("KAFKA_HEALTH_RECOMMENDATION_TOPIC", "health_recommendation_topic"))
 	config.LOG_PATH = cast.ToString(coalesce("LOG_PATH", "logs/info.log"))
 
 	return config
